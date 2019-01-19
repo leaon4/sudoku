@@ -1,0 +1,19 @@
+<div class="sudu-item editable">
+    <div
+        *ngIf="mode==='choosen'"
+        class="choosen-item"
+        (click)="returnToTest($event)"
+        (contextmenu)="returnToTest($event)"
+    >{{choosenItem}}</div>
+    <ng-container *ngIf="mode==='test'">
+        <div
+            *ngFor="let item of testItems; let index = index; trackBy: trackByFn"
+            class="temp-item"
+            (click)="changeTestItem(index)"
+            (contextmenu)="confirmItem($event,index)"
+            (dblclick)="confirmItem($event,index)"
+        >
+            <span [hidden]="!item">{{index+1}}</span>
+        </div>
+    </ng-container>
+</div>

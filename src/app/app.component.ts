@@ -1,87 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
-type SUDU = string[][];
-type sudu = (number | number[])[][];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const SUDU: SUDU = [
-    [".", ".", "1", ".", "7", "4", ".", ".", "."],
-    [".", ".", ".", "9", ".", "2", ".", ".", "."],
-    [".", ".", "9", "8", ".", ".", "2", ".", "4"],
-    ["2", "3", ".", ".", "1", ".", "8", "6", "."],
-    ["5", ".", ".", "3", "6", "7", ".", ".", "9"],
-    [".", "9", "7", ".", "2", ".", ".", "1", "3"],
-    ["4", "2", ".", ".", ".", "6", "1", ".", "."],
-    [".", ".", ".", "1", ".", "3", ".", ".", "."],
-    [".", ".", ".", "2", "8", ".", "9", ".", "."],
-];
-
-
-
-
-
-
-
-
-/* const SUDU: SUDU = [
-    ["5", "3", ".", ".", "7", ".", ".", ".", "."],
-    ["6", ".", ".", "1", "9", "5", ".", ".", "."],
-    [".", "9", "8", ".", ".", ".", ".", "6", "."],
-    ["8", ".", ".", ".", "6", ".", ".", ".", "3"],
-    ["4", ".", ".", "8", ".", "3", ".", ".", "1"],
-    ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
-    [".", "6", ".", ".", ".", ".", "2", "8", "."],
-    [".", ".", ".", "4", "1", "9", ".", ".", "5"],
-    [".", ".", ".", ".", "8", ".", ".", "7", "9"]
-]; */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* const SUDU: SUDU = [
-    [".", ".", "2", ".", ".", ".", ".", ".", "."],
-    ["5", "1", ".", ".", "4", "8", ".", ".", "."],
-    [".", "3", ".", "5", ".", ".", ".", ".", "7"],
-    ["7", ".", "3", ".", ".", ".", ".", "8", "."],
-    [".", ".", ".", "6", ".", "4", ".", ".", "."],
-    [".", "6", ".", ".", ".", ".", "9", ".", "5"],
-    ["6", ".", ".", ".", ".", "5", ".", "4", "."],
-    [".", ".", ".", "3", "2", ".", ".", "5", "1"],
-    [".", ".", ".", ".", ".", ".", "2", ".", "."]
-]; */
-
-
-
-
-
-
-
+import { suduNum, SUDU, SUDU_DATA } from './sudu-data';
 
 @Component({
     selector: 'app-root',
@@ -89,9 +7,80 @@ const SUDU: SUDU = [
     styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-    sudu: sudu;
-    haha = 'haha';
-    private SUDUTosudu(data: SUDU): sudu {
+    suduData = SUDU_DATA[0];
+    editableData: suduNum;
+    validArr: boolean[][] = JSON.parse(
+        JSON.stringify(new Array(9).fill(new Array(9).fill(false)))
+    );
+    aa() {
+        console.log(this.editableData)
+    }
+    trackByFn(y) {
+        return y*10;
+    }
+    trackByFn2(x){
+        return x;
+    }
+    ngOnInit() {
+        this.editableData = this.convertToNumber(this.suduData);
+        // this.runAlgorithm(this.suduData);
+    }
+    private runAlgorithm(data: SUDU) {
+        let result = {};
+        let tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let tempArr2 = new Array(9).fill(tempArr.slice(0));
+        const rows: number[][] = JSON.parse(JSON.stringify(tempArr2));
+        const columns: number[][] = JSON.parse(JSON.stringify(tempArr2));
+        const cubes: number[][] = JSON.parse(JSON.stringify(tempArr2));
+        let needIterate = true;
+        for (let y = 0; y < 9; y++) {
+            for (let x = 0; x < 9; x++) {
+                if (data[y][x] !== '.') {
+                    rows[y].splice(rows[y].indexOf(+data[y][x]), 1);
+                    columns[x].splice(columns[x].indexOf(+data[y][x]), 1);
+                    let cubeIndex = getCubeIndex(y, x);
+                    cubes[cubeIndex].splice(cubes[cubeIndex].indexOf(+data[y][x]), 1);
+                } else {
+                    result[y * 10 + x] = [];
+                }
+            }
+        }
+        function getCubeIndex(y: number, x: number): number {
+            return ~~(x / 3) + ~~(y / 3) * 3;
+        }
+    }
+    private convertToNumber(data: SUDU): suduNum {
+        return data.map((item, y) => {
+            return item.map((item2, x) => {
+                if (item2 !== '.') {
+                    return +item2;
+                } else {
+                    return [];
+                }
+            })
+        });
+    }
+    onConfirm(num: number, y: number, x: number) {
+        if (!num) {
+            this.validArr[y][x] = false;
+            this.editableData[y][x] = [];
+            return;
+        }
+        for (let i = 0; i < 9; i++) {
+            if (this.editableData[y][i] === num
+                || this.editableData[i][x] === num
+                || this.editableData[~~(y / 3) * 3 + ~~(i / 3)][~~(x / 3) * 3 + i % 3] === num
+            ) {
+                this.validArr[y][x] = true;
+                break;
+            }
+        }
+        this.editableData[y][x] = num;
+    }
+    private getCubeIndex(y: number, x: number): number {
+        return ~~(x / 3) + ~~(y / 3) * 3;
+    }
+    /* private SUDUTosudu(data: SUDU): sudu {
         let res;
         let result = {};
         let tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -112,21 +101,9 @@ export class AppComponent implements OnInit {
                 }
             }
         }
-        // console.log(result);
-        // console.log(rows,columns,cubes);
-
-        /* while (needIterate) {
+        while (needIterate) {
             step1();
         }
-        step2();
-        step1();
-        step2();
-        step1();
-        step3();
-        step1();
-        step3(); */
-        
-
         function step3() {
             const twoSame: { index: string[], nums: number[] }[] = [];
             let differs = getDiffers();
@@ -287,139 +264,5 @@ export class AppComponent implements OnInit {
                 })
             });
         }
-    }
-    /* for (let y=0;y<9;y++){
-        for (let x=0;x<9;x++){
-            if (data[y][x]==='.'){
-                result[y*10+x]=[];
-            }
-        }
     } */
-    /* private SUDUTosudu(data: SUDU): sudu {
-        let result: sudu = data.map(item => {
-            return item.map(item2 => {
-                if (item2 !== '.') return +item2;
-                return [];
-            });
-        });
-        let tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        let tempArr2 = new Array(9).fill(tempArr.slice(0));
-        const rows: number[][] = JSON.parse(JSON.stringify(tempArr2));
-        const columns: number[][] = JSON.parse(JSON.stringify(tempArr2));
-        const cubes: number[][] = JSON.parse(JSON.stringify(tempArr2));
-        let needIterate = true;
-        for (let y = 0; y < 9; y++) {
-            for (let x = 0; x < 9; x++) {
-                if (typeof result[y][x] === 'number') {
-                    rows[y].splice(rows[y].indexOf(result[y][x] as number), 1);
-                    columns[x].splice(columns[x].indexOf(result[y][x] as number), 1);
-                    let cubeIndex = getCubeIndex(y, x);
-                    cubes[cubeIndex].splice(cubes[cubeIndex].indexOf(result[y][x] as number), 1);
-                }
-            }
-        }
-        let haha = result.map(item => item.filter(item2 => typeof item2 === 'number'));
-        console.log('初始已知数：'+haha.join().split(',').length)
-        while (needIterate) {
-            console.log('step1执行')
-            step1();
-        }
-    
-        haha = result.map(item => item.filter(item2 => typeof item2 === 'number'));
-        console.log('step1后已知数：'+haha.join().split(',').length);
-
-        const rowDiffrence=[]
-
-        function step1() {
-            needIterate = false;
-            for (let y = 0; y < 9; y++) {
-                for (let x = 0; x < 9; x++) {
-                    if (typeof result[y][x] !== 'number') {
-                        result[y][x] = intersect(y, x);
-                        if ((result[y][x] as number[]).length === 1) {
-                            needIterate = true;
-                            result[y][x] = result[y][x][0];
-                            removeSet(y, x, result[y][x] as number);
-                        }
-                    }
-                }
-            }
-        }
-        function step3() {
-            let column = [[], [], [], [], [], [], [], [], []];
-            let cube = [[], [], [], [], [], [], [], [], []];
-            for (let y = 0; y < 9; y++) {
-                for (let x = 0; x < 9; x++) {
-                    column[x][y] = result[y][x];
-                    cube[getCubeIndex(y, x)][x % 3 + (y % 3) * 3] = result[y][x];
-                }
-            }
-            result.forEach((item, y) => {
-                difference(item, (value: number, x: number) => {
-                    result[y][x] = value;
-                })
-            });
-            column.forEach((item, x) => {
-                difference(item, (value: number, y: number) => {
-                    result[y][x] = value;
-                })
-            });
-            cube.forEach((item, index) => {
-                difference(item, (value: number, index2: number) => {
-                    result[~~(index / 3) * 3 + ~~(index2 / 3)][(index % 3) * 3 + index2 % 3];
-                });
-            });
-        }
-        function difference(arr: (number | number[])[], callback: Function) {
-            let obj = {};
-            arr.forEach((item, index) => {
-                if (typeof item !== 'number') {
-                    item.forEach((item2, index2) => {
-                        if (obj[item2]) {
-                            obj[item2].value++;
-                        } else {
-                            obj[item2] = {};
-                            obj[item2].index = index;
-                            obj[item2].value = 1;
-                        }
-                    })
-                }
-            })
-            for (let i in obj) {
-                if (obj[i].value === 1) {
-                    arr[obj[i].index] = +i;
-                }
-            }
-        }
-        function intersect(y: number, x: number): number[] {
-            let row = rows[y];
-            let column = columns[x];
-            let cube = cubes[getCubeIndex(y, x)];
-            let arr = [];
-            row.forEach(item => {
-                if (column.indexOf(item) > -1 && cube.indexOf(item) > -1) {
-                    arr.push(item);
-                }
-            });
-            return arr;
-        }
-        function removeSet(y: number, x: number, num: number) {
-            remove(rows[y]);
-            remove(columns[x]);
-            remove(cubes[getCubeIndex(y, x)])
-            function remove(set: number[]) {
-                let i = set.indexOf(num);
-                if (i > -1) {
-                    set.splice(i, 1);
-                }
-            }
-        }
-        function getCubeIndex(y: number, x: number): number {
-            return ~~(x / 3) + ~~(y / 3) * 3;
-        }
-        return result;
-    } */
-    ngOnInit() {
-        this.sudu = this.SUDUTosudu(SUDU);
-    }
 }

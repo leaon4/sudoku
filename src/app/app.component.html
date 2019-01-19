@@ -1,9 +1,19 @@
 <div class="sudu-container">
     <div class="container-border"></div>
-    <ng-container *ngFor="let row of sudu">
-        <ng-container *ngFor="let item of row">
-            <app-sudu-item *ngIf="item.length===undefined" [item]="item"></app-sudu-item>
-            <app-sudu-editable-item *ngIf="item.length!==undefined" [tempArr]="item"></app-sudu-editable-item>
+    <ng-container *ngFor="let row of suduData; let y = index; trackBy: trackByFn">
+        <ng-container *ngFor="let item of row;let x = index; trackBy: trackByFn2">
+            <app-sudu-item
+                *ngIf="item !== '.'"
+                [item]="item"
+                [style.backgroundColor]="validArr[y][x]?'pink':''"
+            ></app-sudu-item>
+            <app-sudu-editable-item
+                *ngIf="item === '.'"
+                [tempArr]="editableData[y][x]"
+                (confirm)="onConfirm($event,y,x)"
+                [style.backgroundColor]="validArr[y][x]?'pink':''"
+            ></app-sudu-editable-item>
         </ng-container>
     </ng-container>
 </div>
+<button (click)="aa()">click</button>

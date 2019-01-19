@@ -1,13 +1,13 @@
 <div class="sudu-item editable">
     <div
-        *ngIf="mode==='choosen'"
+        *ngIf="tempArr.length===undefined"
         class="choosen-item"
         (click)="returnToTest($event)"
         (contextmenu)="returnToTest($event)"
-    >{{choosenItem}}</div>
-    <ng-container *ngIf="mode==='test'">
+    >{{tempArr}}</div>
+    <ng-container *ngIf="tempArr.length>=0">
         <div
-            *ngFor="let item of testItems; let index = index; trackBy: trackByFn"
+            *ngFor="let item of templateItems; let index = index; trackBy: trackByFn"
             class="temp-item"
             (click)="changeTestItem(index)"
             (contextmenu)="confirmItem($event,index)"

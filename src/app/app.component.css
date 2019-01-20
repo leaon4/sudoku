@@ -3,7 +3,7 @@
     height:630px;
     display: flex;
     margin:auto;
-    margin-top:100px;
+    margin-top:50px;
     flex-wrap: wrap;
     position: relative;
 }

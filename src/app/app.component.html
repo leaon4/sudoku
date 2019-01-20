@@ -15,5 +15,10 @@
             ></app-sudu-editable-item>
         </ng-container>
     </ng-container>
+    <app-bottom-controller
+        [bottomControl]="bottomControl"
+        (currChange)="onCurrChange($event)"
+        (runAlgorithm)="onRunAlgorithm()"
+    ></app-bottom-controller>
 </div>
 <button (click)="aa()">click</button>

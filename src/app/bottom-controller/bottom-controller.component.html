@@ -1,0 +1,20 @@
+<footer class="footer">
+    <div>
+        <button (click)="onChange(-1)">上一题</button>
+    </div>
+    <div>
+        <button (click)="onChange(1)">下一题</button>
+    </div>
+    <div>
+        <label>
+            当前：
+            <select [(ngModel)]="current" (change)="onChange()">
+                <option *ngFor="let item of total" value="{{item}}">第{{item}}题</option>
+            </select>
+        </label>
+    </div>
+    <div>
+        <button hidden (click)="onRunAlgorithm()">自动求解</button>
+    </div>
+    <div>共{{total?.length}}题</div>
+</footer>

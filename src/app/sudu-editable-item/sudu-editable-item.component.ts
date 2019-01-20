@@ -12,9 +12,11 @@ export class SuduEditableItemComponent implements OnInit {
     templateItems: boolean[] = new Array(9).fill(false);
 
     ngOnInit() {
-        this.tempArr.forEach(item => {
-            this.templateItemChange(item);
-        });
+        if (typeof this.tempArr!=='number'){
+            this.tempArr.forEach(item => {
+                this.templateItemChange(item);
+            });
+        }
     }
 
     private templateItemChange(index: number): void {

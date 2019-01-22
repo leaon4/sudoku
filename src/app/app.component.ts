@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { suduNum, SUDU, SUDU_DATA } from './sudu-data';
-
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -19,8 +18,10 @@ export class AppComponent implements OnInit {
     validArr: boolean[][] = JSON.parse(
         JSON.stringify(new Array(9).fill(new Array(9).fill(false)))
     );
+    gen: Generator;
     aa() {
-        console.log(this.editableData)
+        // console.log(this.editableData)
+        this.gen.next();
     }
     trackByFn(y) {
         return y * 10;
@@ -41,7 +42,7 @@ export class AppComponent implements OnInit {
     ngOnInit() {
         this.editableData = this.convertToNumber(this.suduData);
         // console.time('aa');
-        // this.runAlgorithm(this.editableData);
+        this.runAlgorithm(this.editableData);
         // console.timeEnd('aa');
     }
     private runAlgorithm(data: suduNum) {
@@ -56,12 +57,15 @@ export class AppComponent implements OnInit {
             x: number
         }[] = [];
         let result: {} = {};
+        let resultLength: number = 0;// 在假设步骤会出错
         let tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         let tempArr2 = new Array(9).fill(tempArr.slice(0));
         let rows: number[][] = JSON.parse(JSON.stringify(tempArr2));
         let columns: number[][] = JSON.parse(JSON.stringify(tempArr2));
         let cubes: number[][] = JSON.parse(JSON.stringify(tempArr2));
         let needIterate = true;
+        let found: boolean = false;
+        let assumeWrong: boolean = false;
         for (let y = 0; y < 9; y++) {
             for (let x = 0; x < 9; x++) {
                 if (typeof data[y][x] === 'number') {
@@ -71,38 +75,38 @@ export class AppComponent implements OnInit {
                     cubes[cubeIndex].splice(cubes[cubeIndex].indexOf(+data[y][x]), 1);
                 } else {
                     result['' + y + x] = [];
+                    resultLength++;
                 }
             }
         }
-        runStep1();
-        step2();
-        runStep1();
-        step2();
-        runStep1();
-        step2();
-        runStep1();
-        step2();
-        assumeStep();
-        runStep1();
-        step2();
-        runStep1();
-        restoreAssume();
-        runStep1();
-        step2();
-        assumeStep();
-        runStep1();
-        step2();
-        runStep1();
-        step2();
-        runStep1();
-        function runStep1() {
+
+        function* gen() {
+            while (true) {
+                console.info('step1')
+                found = false;
+                yield step1();
+                if (assumeWrong) {
+                    assumeWrong = false;
+                    yield restoreAssume();
+                } else if (!found) {
+                    console.info('step2')
+                    yield step2();
+                    if (!found) {
+                        yield assumeStep();
+                    }
+                }
+            }
+        }
+        step1();
+        /* function runStep1() {
             needIterate = true;
             while (needIterate && Object.keys(result).length) {
                 console.info('step1')
                 step1();
             }
-        }
+        } */
         this.reCalEditableData(result);
+        this.gen = gen();
 
 
         function assumeStep() {
@@ -120,13 +124,14 @@ export class AppComponent implements OnInit {
                     };
                     snapShots.push(JSON.parse(JSON.stringify(snapShot)));
                     console.info('assume ' + i + ';value=' + result[i][0]);
-                    afterFindOne(y, x, i);
-                    break;
+                    afterFindOne(y, x, result[i][0]);
+                    return;
                 }
             }
+            console.error('没有只有两个假设值的数字！')
         }
         function restoreAssume() {
-            let snapShot = snapShots.shift();
+            let snapShot = snapShots.pop();
             that.editableData = data = snapShot.data;
             result = snapShot.result;
             rows = snapShot.rows;
@@ -135,9 +140,9 @@ export class AppComponent implements OnInit {
             let y = snapShot.y;
             let x = snapShot.x;
             let i = '' + y + x;
-            console.info('restore ' + i + ';value=' + result[i][1]);
             result[i].shift();
-            afterFindOne(y, x, i);
+            console.info('restore ' + i + ';value=' + result[i][0]);
+            afterFindOne(y, x, result[i][0]);
 
             /* restoreSet(y, x, assume.value);
             function restoreSet(y: number, x: number, num: number) {
@@ -177,9 +182,11 @@ export class AppComponent implements OnInit {
                     if (differ[i].length === 1 && result[differ[i][0]]) {
                         console.info('find by step2')
                         let [y, x] = getXYIndex(differ[i][0]);
-                        data[y][x] = +i;
-                        removeSet(y, x, +i);
-                        delete result[differ[i][0]];
+                        // 删除操作，和step1的afterFindOne相似又不同
+                        // data[y][x] = +i;
+                        // removeSet(y, x, +i);
+                        // delete result[differ[i][0]];
+                        afterFindOne(y, x, +i);
                     }
                 }
             });
@@ -200,6 +207,7 @@ export class AppComponent implements OnInit {
                 result[i] = intersect(y, x);
                 if (!result[i].length) {
                     console.warn('wrong assume');
+                    assumeWrong = true;
                     needIterate = false;
                     // restoreAssume();
                     return;
@@ -207,15 +215,17 @@ export class AppComponent implements OnInit {
                 if (result[i].length === 1) {
                     console.info('find by step1')
                     needIterate = true;
-                    afterFindOne(y, x)
+                    afterFindOne(y, x, result[i][0]);
                 }
             }
         }
-        function afterFindOne(y: number, x: number, i?: string) {
-            i = i || '' + y + x;
-            data[y][x] = result[i][0];
-            removeSet(y, x, result[i][0]);
+        function afterFindOne(y: number, x: number, num: number) {
+            let i = '' + y + x;
+            data[y][x] = num;
+            removeSet(y, x, num);
             delete result[i];
+            resultLength--;
+            found = true;
         }
         function getCubeIndex(y: number, x: number): number {
             return ~~(x / 3) + ~~(y / 3) * 3;

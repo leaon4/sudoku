@@ -54,7 +54,8 @@ export class AppComponent implements OnInit {
             columns: number[][],
             cubes: number[][],
             y: number,
-            x: number
+            x: number,
+            resultLength: number,
         }[] = [];
         let result: {} = {};
         let resultLength: number = 0;// 在假设步骤会出错
@@ -80,24 +81,34 @@ export class AppComponent implements OnInit {
             }
         }
 
+
+
         function* gen() {
-            while (true) {
+            while (resultLength) {
                 console.info('step1')
                 found = false;
-                yield step1();
+                step1();
+                that.reCalEditableData(result);
+                yield;
                 if (assumeWrong) {
                     assumeWrong = false;
-                    yield restoreAssume();
+                    restoreAssume();
+                    that.reCalEditableData(result);
+                    yield;
                 } else if (!found) {
-                    console.info('step2')
-                    yield step2();
+                    console.info('step2');
+                    step2();
+                    that.reCalEditableData(result);
+                    yield;
                     if (!found) {
-                        yield assumeStep();
+                        assumeStep();
+                        that.reCalEditableData(result);
+                        yield;
                     }
                 }
             }
         }
-        step1();
+        // step1();
         /* function runStep1() {
             needIterate = true;
             while (needIterate && Object.keys(result).length) {
@@ -105,7 +116,23 @@ export class AppComponent implements OnInit {
                 step1();
             }
         } */
-        this.reCalEditableData(result);
+        /* while (resultLength) {
+            console.info('step1')
+            found = false;
+            step1();
+            if (assumeWrong) {
+                assumeWrong = false;
+                restoreAssume();
+            } else if (!found) {
+                console.info('step2');
+                step2();
+                if (!found) {
+                    assumeStep();
+                    that.reCalEditableData(result);
+                }
+            }
+        }
+        this.reCalEditableData(result); */
         this.gen = gen();
 
 
@@ -120,7 +147,8 @@ export class AppComponent implements OnInit {
                         columns,
                         cubes,
                         y,
-                        x
+                        x,
+                        resultLength,
                     };
                     snapShots.push(JSON.parse(JSON.stringify(snapShot)));
                     console.info('assume ' + i + ';value=' + result[i][0]);
@@ -134,6 +162,7 @@ export class AppComponent implements OnInit {
             let snapShot = snapShots.pop();
             that.editableData = data = snapShot.data;
             result = snapShot.result;
+            resultLength = snapShot.resultLength;
             rows = snapShot.rows;
             columns = snapShot.columns;
             cubes = snapShot.cubes;

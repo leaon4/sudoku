@@ -13,8 +13,12 @@
             </select>
         </label>
     </div>
+    <div>耗时（ms）：{{time}}</div>
     <div>
-        <button (click)="onRunAlgorithm()" hidden>自动求解</button>
+        <button (click)="onAutoSolve()">自动求解</button>
+    </div>
+    <div>
+        <button (click)="onStepSolve()">分步求解</button>
     </div>
     <div>共{{total?.length}}题</div>
 </footer>

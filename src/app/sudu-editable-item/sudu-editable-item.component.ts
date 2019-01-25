@@ -12,18 +12,12 @@ export class SuduEditableItemComponent implements OnInit, OnChanges {
     templateItems: boolean[] = new Array(9).fill(false);
 
     ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+        if (changes.tempArr.firstChange) return;
         let curr: number[] = changes.tempArr.currentValue;
-        let prev: number[] = changes.tempArr.previousValue;
-        /* if (Array.isArray(curr)&&Array.isArray(prev)){
-            if ()
-        } */
         if (Array.isArray(curr)) {
             this.templateItems.forEach((item, index) => {
                 this.templateItems[index] = curr.includes(index + 1)
             })
-        } else {
-            // this.noChangeConfirmItem(null, curr);
-            // todo 错误处理
         }
     }
 

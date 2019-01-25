@@ -17,8 +17,9 @@
     </ng-container>
     <app-bottom-controller
         [bottomControl]="bottomControl"
+        [time]="time"
         (currChange)="onCurrChange($event)"
-        (runAlgorithm)="onRunAlgorithm()"
+        (autoSolve)="onAutoSolve()"
+        (stepSolve)="onStepSolve()"
     ></app-bottom-controller>
 </div>
-<button (click)="aa()">分步求解</button>

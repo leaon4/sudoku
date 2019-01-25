@@ -10,8 +10,10 @@ export class BottomControllerComponent implements OnInit {
         current: number;
         total: number;
     };
+    @Input() time: number;
     @Output() currChange = new EventEmitter<number>();
-    @Output() runAlgorithm = new EventEmitter<any>();
+    @Output() autoSolve = new EventEmitter<any>();
+    @Output() stepSolve = new EventEmitter<any>();
     current: number | string = 1;
     total: number[] = [];
     ngOnInit() {
@@ -30,7 +32,10 @@ export class BottomControllerComponent implements OnInit {
         }
         this.currChange.emit(this.current);
     }
-    onRunAlgorithm() {
-        this.runAlgorithm.emit();
+    onAutoSolve() {
+        this.autoSolve.emit();
+    }
+    onStepSolve() {
+        this.stepSolve.emit();
     }
 }

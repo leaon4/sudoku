@@ -36,3 +36,9 @@
     pointer-events: none;
     z-index: 1;
 }
+.wrong-tip{
+    color:red;
+    margin-top:40px;
+    text-align:center;
+    display: block;
+}

@@ -4,4 +4,4 @@
 
 ![数独截图][1]
 
-[1]: https://github.com/leaon4/recruit-data/blob/master/screenshots/title.jpg?raw=true
+[1]: https://github.com/leaon4/sudu/blob/master/screenshots/screenshot.png?raw=true

@@ -55,7 +55,7 @@ export class AppComponent implements OnInit {
         },500) */
     }
     private runAlgorithm(data: suduNum) {
-        let that = this;
+        const that = this;
         const snapShots: {
             data: suduNum,
             result: {},
@@ -68,26 +68,33 @@ export class AppComponent implements OnInit {
         }[] = [];
         let result: {} = {};
         let resultLength: number = 0;
-        let tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        let tempArr2 = new Array(9).fill(tempArr.slice(0));
-        let rows: number[][] = JSON.parse(JSON.stringify(tempArr2));
-        let columns: number[][] = JSON.parse(JSON.stringify(tempArr2));
-        let cubes: number[][] = JSON.parse(JSON.stringify(tempArr2));
+        let rows: number[][];
+        let columns: number[][];
+        let cubes: number[][];
         let found: boolean = false;
         let assumeWrong: boolean = false;
-        for (let y = 0; y < 9; y++) {
-            for (let x = 0; x < 9; x++) {
-                if (typeof data[y][x] === 'number') {
-                    rows[y].splice(rows[y].indexOf(+data[y][x]), 1);
-                    columns[x].splice(columns[x].indexOf(+data[y][x]), 1);
-                    let cubeIndex = getCubeIndex(y, x);
-                    cubes[cubeIndex].splice(cubes[cubeIndex].indexOf(+data[y][x]), 1);
-                } else {
-                    result['' + y + x] = [];
-                    resultLength++;
+
+        (function () {
+            let tempArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            let tempArr2 = new Array(9).fill(tempArr.slice(0));
+            rows = JSON.parse(JSON.stringify(tempArr2));
+            columns = JSON.parse(JSON.stringify(tempArr2));
+            cubes = JSON.parse(JSON.stringify(tempArr2));
+            for (let y = 0; y < 9; y++) {
+                for (let x = 0; x < 9; x++) {
+                    if (typeof data[y][x] === 'number') {
+                        rows[y].splice(rows[y].indexOf(+data[y][x]), 1);
+                        columns[x].splice(columns[x].indexOf(+data[y][x]), 1);
+                        let cubeIndex = getCubeIndex(y, x);
+                        cubes[cubeIndex].splice(cubes[cubeIndex].indexOf(+data[y][x]), 1);
+                    } else {
+                        result['' + y + x] = [];
+                        resultLength++;
+                    }
                 }
             }
-        }
+        })();
+        this.gen = gen();
         this.auto = function () {
             while (resultLength) {
                 found = false;
@@ -132,7 +139,6 @@ export class AppComponent implements OnInit {
                 }
             }
         }
-        this.gen = gen();
 
         function assumeStep() {
             for (let i in result) {

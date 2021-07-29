@@ -8,7 +8,7 @@
     <div>
         <label>
             当前：
-            <select [(ngModel)]="current" (change)="onChange()">
+            <select [(ngModel)]="current" (change)="onChange(0)">
                 <option *ngFor="let item of total" value="{{item}}">第{{item}}题</option>
             </select>
         </label>

@@ -54,6 +54,9 @@ export class AppComponent implements OnInit {
             console.error('fdsfdf'+this.curr)
         },500) */
     }
+    showIntro() {
+        alert('每个格子又分为9个小宫格，左键点击即在宫格内显式相应数字，此数字仅用于辅助。对小宫格点击右键，则确定这一格真正的数字。若确定的数字有冲突，会显示为粉红色背景。')
+    }
     private runAlgorithm(data: suduNum) {
         const that = this;
         const snapShots: {
